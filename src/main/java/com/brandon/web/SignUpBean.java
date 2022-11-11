@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SignUpBean {
 	@NotBlank
-	@Size(min = 3, max = 20)
+	@Size(min = 3, max = 50)
 	private String username;
 	
 	@NotBlank
@@ -26,7 +26,7 @@ public class SignUpBean {
 	private Set<String> role;
 
 	@NotBlank
-	@Size(min = 6, max = 40)
+	@Size(min = 2, max = 40)
 	private String password;
 	}
 
