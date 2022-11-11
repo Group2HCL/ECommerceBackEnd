@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +27,9 @@ import com.brandon.repositories.UserRepo;
 public class UserController {
 	@Autowired
 	UserRepo userRepository;
+	
+	@Autowired
+	PasswordEncoder passwordEncoder;
 	
 	@GetMapping("/users")
 	//@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
@@ -80,7 +84,8 @@ public class UserController {
 			Users user2 = userData.get();
 			user2.setUsername(user.getUsername());
 			user2.setEmail(user.getEmail());
-			user2.setPassword(user.getPassword());
+			String encryptedPw = passwordEncoder.encode(user.getPassword());
+			user2.setPassword(encryptedPw);
 			return new ResponseEntity<>(userRepository.save(user2),HttpStatus.OK);
 		}else {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
