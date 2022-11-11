@@ -8,13 +8,18 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.brandon.Exceptions.NotEnoughProductsInStockException;
+import com.brandon.models.Order;
+import com.brandon.models.OrderProduct;
 import com.brandon.models.ProductModel;
+import com.brandon.models.Users;
 import com.brandon.repositories.ProductRepo;
 
 @Service
@@ -22,9 +27,11 @@ import com.brandon.repositories.ProductRepo;
 @Transactional
 public class ShoppingCartServiceImpl implements ShoppingCartService {
 	private final ProductRepo productRepository;
-
+	private OrderService orderService;
+	private OrderProductService orderProductService;
+	private String uName=SecurityContextHolder.getContext().getAuthentication().getName();
     private Map<ProductModel, Integer> products = new HashMap<>();
-
+    private EmailService emailService;
     @Autowired
     public ShoppingCartServiceImpl(ProductRepo productRepository) {
         this.productRepository = productRepository;
@@ -78,13 +85,18 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Override
     public void checkout() throws NotEnoughProductsInStockException {
         ProductModel product;
+        Order order=orderService.createNewOrder(uName);        
         for (Map.Entry<ProductModel, Integer> entry : products.entrySet()) {
             // Refresh quantity for every product before checking
             product = productRepository.getById(entry.getKey().getId());
             if (product.getStock() < entry.getValue())
                 throw new NotEnoughProductsInStockException(product);
-            entry.getKey().setStock(product.getStock() - entry.getValue());
+            OrderProduct newProduct= orderProductService.createEntry(entry.getKey(), entry.getValue());
+            order.getProducts().add(newProduct);
+            entry.getKey().setStock(product.getStock() - entry.getValue());         
         }
+        orderService.saveOrder(order);
+        emailService.sendSimpleMessage("useUserdetails@forEmail.com", "Registration@test.com", "Welcome to the Shop!", "Thank you for joining the Shop!");
         productRepository.saveAll(products.keySet());
         productRepository.flush();
         products.clear();
