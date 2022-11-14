@@ -15,7 +15,7 @@ import com.brandon.repositories.UserRepo;
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService{
 	@Autowired
-	UserRepo userRepository;
+	UserService userRepository;
 	
 	@Override
 	@Transactional

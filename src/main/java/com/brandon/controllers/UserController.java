@@ -27,7 +27,7 @@ import com.brandon.repositories.UserRepo;
 import com.brandon.security.services.EmailService;
 import com.brandon.security.services.UserService;
 
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin (origins = "http://localhost:4200/", allowCredentials="true")
 @RestController
 @RequestMapping("/api/User")
 public class UserController {
@@ -47,7 +47,7 @@ public class UserController {
 			if (username ==null)
 				userRepository.findAll().forEach(users::add);
 			else
-				userRepository.findByUsernameContaining(username).forEach(users::add);
+				users.add(uService.findByUsername(username).get());
 			
 			if(users.isEmpty()) {
 				return new ResponseEntity<>(HttpStatus.NO_CONTENT);

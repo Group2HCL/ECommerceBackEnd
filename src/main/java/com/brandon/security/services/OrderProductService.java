@@ -10,7 +10,7 @@ public class OrderProductService {
 	@Autowired
 	OrderProductRepo repo;
 	@Autowired
-	ProductServiceImpl prepo;
+	ProductService prepo;
 	
 	
 	public OrderProduct createEntry(ProductModel product, int quantity){		

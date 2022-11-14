@@ -29,6 +29,7 @@ import com.brandon.repositories.RoleRepo;
 import com.brandon.repositories.UserRepo;
 import com.brandon.security.jwt.JwtUtils;
 import com.brandon.security.services.EmailService;
+import com.brandon.security.services.UserService;
 import com.brandon.security.services.UserDetailsImpl;
 import com.brandon.web.LoginBean;
 import com.brandon.web.MessageBean;
@@ -43,7 +44,7 @@ public class AuthenticationController {
 	AuthenticationManager authenticationManager;
 	
 	@Autowired
-	UserRepo userRepository;
+	UserService userService;
 	
 	@Autowired
 	RoleRepo roleRepository;
@@ -57,7 +58,7 @@ public class AuthenticationController {
 	EmailService emailService;
 	
 	@PostMapping("/signin")
-	public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginBean loginRequest) {
+	public ResponseEntity<UserInfoBean> authenticateUser(@Valid @RequestBody LoginBean loginRequest) {
 		Authentication authentication = authenticationManager
 				.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 		
@@ -79,11 +80,11 @@ public class AuthenticationController {
 	
 	@PostMapping("/signup")
 	public ResponseEntity<?> registerUser(@Valid @RequestBody SignUpBean signUpRequest){
-		if (userRepository.existsByUsername(signUpRequest.getUsername())) {
+		if (userService.existsByUsername(signUpRequest.getUsername())) {
 			return ResponseEntity.badRequest().body(new MessageBean("Error: Username is already taken!"));
 		}
 		
-		if (userRepository.existsByEmail(signUpRequest.getEmail())) {
+		if (userService.existsByEmail(signUpRequest.getEmail())) {
 			return ResponseEntity.badRequest().body(new MessageBean("Error: Email is already taken!"));
 		}
 		
@@ -115,7 +116,7 @@ public class AuthenticationController {
 			});
 		}
 		user.setRoles(roles);
-		userRepository.save(user);
+		userService.create(user);
 		emailService.sendSimpleMessage(user.getEmail(), "Registration@test.com", "Welcome to the Shop!", "Thank you for joining the Shop!");
 		
 		return ResponseEntity.ok(new MessageBean("User registered successfully!"));

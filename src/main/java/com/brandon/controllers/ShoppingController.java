@@ -33,7 +33,7 @@ import com.brandon.security.services.UserService;
 
 
 @RestController
-@CrossOrigin (origins = "http://localhost:4200/cart")
+@CrossOrigin (origins = "http://localhost:4200/", allowCredentials="true")
 @RequestMapping("api/ShoppingCart")
 public class ShoppingController {
 	@Autowired
@@ -52,16 +52,17 @@ public class ShoppingController {
 		long currentUser = usercon.getCurrentUser().getId();
 		Optional<Cart> cart = cartCon.findCart(currentUser);
 		HashMap<ProductModel,Integer> items = new HashMap<>();
+		try {
 		if(cart.isPresent()&&!cart.get().getItems().isEmpty()) {
 			for(CartContents content:cart.get().getItems()) {
 				items.put(content.getProduct(), content.getQuantity());			
 				}
-		}
-			return items;		
+		}}catch (NullPointerException e) {System.out.println("Cart is empty");}
+		return items;		
 	}
 	
 	
-	@GetMapping("/shoppingCart/addProduct/{productId}")
+	@GetMapping("/addProduct/{productId}")
     public @ResponseBody void addProductToCart(@PathVariable("productId") Long productId) {
 		//get the current usersID using Security
 		Long currentUser= usercon.getCurrentUser().getId();
@@ -70,40 +71,51 @@ public class ShoppingController {
 		boolean loadTrigger = true;
 		if(!cart.isPresent()) {
 			cartCon.createCart(currentUser);
+			System.out.println("Cart synthesized in process");
 			cart=cartCon.findCart(currentUser);
 			}		
 		for (CartContents contents:cart.get().getItems()) {
-				if(product.equals(contents.getProduct())) {
+			System.out.println("Product Found");
+			try {	
+			if(product.getId()==contents.getProduct().getId()) {
 					contents.setQuantity(contents.getQuantity()+1);
 					cartContentCon.save(contents);
+					System.out.println("Fired on created item");
 					loadTrigger=false;
-				}
+				}}
+			catch(NullPointerException e) {System.out.println("Cart is empty");
+			break;}
 			}
 		if (loadTrigger){
 				CartContents item=new CartContents();
 				item.setProduct(product);
 				item.setQuantity(1);
 				cart.get().getItems().add(item);
+				System.out.println("Fired on new item");
 				cartContentCon.save(item);
 			}
 	
 		cartCon.updateCart(cart.get());
     }
 	
-	@GetMapping("/shoppingCart/removeProduct/{productId}")
+	@GetMapping("/removeProduct/{productId}")
     public @ResponseBody void removeProductFromCart(@PathVariable("productId") Long productId) {
 		Long currentUserId = usercon.getCurrentUser().getId();
 		Optional<Cart> cart = cartCon.findCart(currentUserId);
 		ProductModel product = prodCon.getReferenceById(productId);
 		if(cart.isPresent()&&!cart.get().getItems().isEmpty())
 			for(CartContents content:cart.get().getItems()){
-				if(content.getProduct().equals(product)) {
-					cartContentCon.delete(content);
-				}
+				try {	
+					if(product.getId()==content.getProduct().getId()) {							
+							cartContentCon.delete(content);
+							System.out.println("Deleted Item");							
+						}}
+					catch(NullPointerException e) {System.out.println("Cart is empty");
+					break;}
 				cartCon.updateCart(cart.get());
 			}
     	}	
-	@GetMapping("/shoppingCart/checkout")
+	@GetMapping("/checkout")
     public @ResponseBody Map<String, Integer> checkout() {
 		try{cartCon.checkout();}
 		catch(NotEnoughProductsInStockException e) {

@@ -21,13 +21,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.brandon.models.ProductModel;
 import com.brandon.repositories.ProductRepo;
+import com.brandon.security.services.ProductService;
 
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin (origins = "http://localhost:4200/", allowCredentials="true")
 @RestController
 @RequestMapping("/api/Product")
 public class ProductController {
 	@Autowired
 	ProductRepo productRepository;
+	ProductService pservice;
 	
 	@GetMapping("/products")
 	//@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
@@ -38,7 +40,7 @@ public class ProductController {
 			if (name ==null)
 				productRepository.findAll().forEach(products::add);
 			else
-				productRepository.findByNameContaining(name).forEach(products::add);
+				pservice.findbyNameContaining(name).forEach(products::add);
 			
 			if(products.isEmpty()) {
 				return new ResponseEntity<>(HttpStatus.NO_CONTENT);

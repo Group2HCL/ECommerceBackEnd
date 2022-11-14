@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -31,7 +32,7 @@ public class Cart {
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int cartId;
 	private long ownerId;
-	 @OneToMany(fetch = FetchType.LAZY)
+	 @OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
 	 @JoinTable(name = "Cart_CartContents", 
 	             joinColumns = @JoinColumn(name = "Cart_cartid"),
 	             inverseJoinColumns = @JoinColumn(name = "CartContent_cartContentId"))

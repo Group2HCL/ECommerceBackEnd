@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Set;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -27,7 +29,7 @@ public class Order {
 	@Column(name="orderno")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int orderno;
-	 @OneToMany(fetch = FetchType.LAZY)
+	 @OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
 	 @JoinTable(name = "Order_OrderProduct", 
 	             joinColumns = @JoinColumn(name = "Order"),
 	             inverseJoinColumns = @JoinColumn(name = "OrderProduct"))

@@ -15,7 +15,6 @@ import lombok.NoArgsConstructor;
 
 @Data
 //@AllArgsConstructor
-@NoArgsConstructor
 @Entity
 @Table(name="Product_Catalog")
 public class ProductModel {
@@ -45,12 +44,14 @@ public class ProductModel {
 	}
 
 	public ProductModel(String name, String category, BigDecimal price, long stock, String description) {
-		super();
 		this.name = name;
 		this.category = category;
 		this.price = price;
 		this.stock = stock;
 		this.description = description;
+	}
+	public ProductModel() {
+		this.id=Long.valueOf(0);
 	}
 	
 	@Override
