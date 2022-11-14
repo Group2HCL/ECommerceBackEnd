@@ -19,7 +19,7 @@ import com.brandon.security.services.RoleService;
 
 @RestController
 @RequestMapping("api/roles")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin (origins = "http://localhost:4200/", allowCredentials="true")
 public class RoleController {
 	@Autowired
 	private RoleService roleService;
