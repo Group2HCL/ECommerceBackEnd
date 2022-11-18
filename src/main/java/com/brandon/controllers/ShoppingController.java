@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,24 +34,27 @@ import com.brandon.security.services.UserService;
 
 
 @RestController
-@CrossOrigin (origins = "http://localhost:4200/cart")
-@RequestMapping("api/ShoppingCart")
+@CrossOrigin (origins = "http://localhost:4200")
+@RequestMapping("/api/ShoppingCart")
 public class ShoppingController {
 	@Autowired
-	CartService cartCon;
+	CartService cartService;
 	@Autowired
-	ProductRepo prodCon;
+	ProductRepo prodRepo;
 	@Autowired
-	OrderService orderCon;
+	OrderService orderService;
 	@Autowired
-	UserService usercon;
+	UserService userService;
 	@Autowired
 	CartContentsRepo cartContentCon;
 	
-	@GetMapping("/shoppingCart")
+	@GetMapping("/")
 	public @ResponseBody Map<ProductModel, Integer> shoppingCart() {
-		long currentUser = usercon.getCurrentUser().getId();
-		Optional<Cart> cart = cartCon.findCart(currentUser);
+		//Set the current user's ID
+		long currentUserId = userService.getCurrentUser().getId();
+		
+		//Does the currentUser have a cart? 
+		Optional<Cart> cart = cartService.findCartOfUser(currentUserId);
 		HashMap<ProductModel,Integer> items = new HashMap<>();
 		if(cart.isPresent()&&!cart.get().getItems().isEmpty()) {
 			for(CartContents content:cart.get().getItems()) {
@@ -61,16 +65,17 @@ public class ShoppingController {
 	}
 	
 	
-	@GetMapping("/shoppingCart/addProduct/{productId}")
+	@GetMapping("/addProduct/{productId}")
     public @ResponseBody void addProductToCart(@PathVariable("productId") Long productId) {
 		//get the current usersID using Security
-		Long currentUser= usercon.getCurrentUser().getId();
-		Optional<Cart> cart = cartCon.findCart(currentUser);
-		ProductModel product = prodCon.getReferenceById(productId);
+		Long currentUser= userService.getCurrentUser().getId();
+		Optional<Cart> cart = cartService.findCartOfUser(currentUser);
+		ProductModel product = prodRepo.getReferenceById(productId);
+		System.out.println("PRINT IN THE CONSOLE" + product);
 		boolean loadTrigger = true;
 		if(!cart.isPresent()) {
-			cartCon.createCart(currentUser);
-			cart=cartCon.findCart(currentUser);
+			cartService.createCart(currentUser);
+			cart=cartService.findCartOfUser(currentUser);
 			}		
 		for (CartContents contents:cart.get().getItems()) {
 				if(product.equals(contents.getProduct())) {
@@ -87,30 +92,30 @@ public class ShoppingController {
 				cartContentCon.save(item);
 			}
 	
-		cartCon.updateCart(cart.get());
+		cartService.updateCart(cart.get());
     }
 	
-	@GetMapping("/shoppingCart/removeProduct/{productId}")
+	@GetMapping("/removeProduct/{productId}")
     public @ResponseBody void removeProductFromCart(@PathVariable("productId") Long productId) {
-		Long currentUserId = usercon.getCurrentUser().getId();
-		Optional<Cart> cart = cartCon.findCart(currentUserId);
-		ProductModel product = prodCon.getReferenceById(productId);
+		Long currentUserId = userService.getCurrentUser().getId();
+		Optional<Cart> cart = cartService.findCartOfUser(currentUserId);
+		ProductModel product = prodRepo.getReferenceById(productId);
 		if(cart.isPresent()&&!cart.get().getItems().isEmpty())
 			for(CartContents content:cart.get().getItems()){
 				if(content.getProduct().equals(product)) {
 					cartContentCon.delete(content);
 				}
-				cartCon.updateCart(cart.get());
+				cartService.updateCart(cart.get());
 			}
     	}	
-	@GetMapping("/shoppingCart/checkout")
+	@GetMapping("/checkout")
     public @ResponseBody Map<String, Integer> checkout() {
-		try{cartCon.checkout();}
+		try{cartService.checkout();}
 		catch(NotEnoughProductsInStockException e) {
 			return null;
 		}
-		Users currentUser = usercon.getCurrentUser();
-		Optional<Order> newOrder = orderCon.findOrder(currentUser.getId());
+		Users currentUser = userService.getCurrentUser();
+		Optional<Order> newOrder = orderService.findOrder(currentUser.getId());
 		HashMap<String,Integer> orderItenerary = new HashMap<>();
 		if(newOrder.isPresent()) {
 			for(OrderProduct orderProduct:newOrder.get().getProducts()) {

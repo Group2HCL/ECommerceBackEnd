@@ -14,7 +14,6 @@ import com.brandon.models.Users;
 import com.brandon.repositories.RoleRepo;
 import com.brandon.repositories.UserRepo;
 
-
 @Service
 public class RoleService {
 
@@ -23,7 +22,6 @@ public class RoleService {
 
 	@Autowired
 	private UserRepo userRepo;
-
 
 	// Create a role
 	public Roles createRole(Roles r) {
@@ -44,8 +42,17 @@ public class RoleService {
 	public void deleteByRoleId(Long roleId) {
 		roleRepo.deleteById(roleId);
 	}
-	
-	
+
+	public boolean isAdmin(Long userId) {
+		Optional<Users> targetUser = userRepo.findById(userId);
+		boolean isAdmin = false;
+		if (targetUser.isPresent()) {
+			if (!(targetUser.get().getRoles().contains(roleRepo.findByName(UserRoles.ROLE_ADMIN).get()))) {
+				isAdmin = true;
+			}
+		}
+		return isAdmin;
+	}
 
 	// Admin rights
 	public boolean updateAdminRights(Long userId) {
@@ -65,7 +72,7 @@ public class RoleService {
 				targetUser.get().setRoles(targetUserRoles);
 				userRepo.save(targetUser.get());
 			}
-		} 
+		}
 		return isAdmin;
 	}
 }

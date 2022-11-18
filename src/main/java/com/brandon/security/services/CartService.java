@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.brandon.Exceptions.NotEnoughProductsInStockException;
@@ -17,11 +18,22 @@ import com.brandon.repositories.CartRepo;
 import com.brandon.repositories.ProductRepo;
 @Service
 public class CartService {
+	@Autowired
 	CartRepo repo;
+	
+	@Autowired
 	OrderService orderService;
+	
+	@Autowired
 	EmailService emailService;
+	
+	@Autowired
 	ProductRepo productRepository;
+	
+	@Autowired
 	OrderProductService orderProductService;
+	
+	@Autowired
 	UserService userService;
 	
 	public void deleteCart(Cart cart) {
@@ -34,7 +46,7 @@ public class CartService {
 	public void updateCart(Cart cart) {
 		repo.save(cart);
 	}
-	public Optional<Cart> findCart(Long user) {
+	public Optional<Cart> findCartOfUser(Long user) {
 		Optional<Cart> trycart = Optional.of(new Cart());
 		List<Cart> roster = repo.findAll();
 		for(Cart cart:roster) {
@@ -47,7 +59,7 @@ public class CartService {
 	 public void checkout() throws NotEnoughProductsInStockException {
 		 	Users uName = userService.getCurrentUser();		 
 	        Order order=orderService.createNewOrder(uName.getUsername());
-	        Optional<Cart> cart=findCart(uName.getId());
+	        Optional<Cart> cart=findCartOfUser(uName.getId());
 	        ProductModel product=null;
 	        if(cart.isPresent()&&!cart.get().getItems().isEmpty()) {
 	        for (CartContents contents : cart.get().getItems()) {

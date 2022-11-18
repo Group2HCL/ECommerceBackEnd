@@ -45,4 +45,9 @@ public class RoleController {
     public boolean toggleUser(@PathVariable Long userId) {
 		return roleService.updateAdminRights(userId);  
     } 
+	
+	@GetMapping("/isAdmin/{userId}")
+	public boolean checkAdmin(@PathVariable Long roleId) {
+		return roleService.isAdmin(roleId);
+	}
 }
