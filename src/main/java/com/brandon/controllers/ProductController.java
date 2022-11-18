@@ -34,22 +34,22 @@ public class ProductController {
 	@GetMapping("/products")
 	//@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	public ResponseEntity<List<ProductModel>> getAllProducts(@RequestParam(required = false) String name){
-		try {
+		//try {
 			List<ProductModel>products = new ArrayList<ProductModel>();
 			
 			if (name ==null)
 				productRepository.findAll().forEach(products::add);
 			else
-				pservice.findbyNameContaining(name).forEach(products::add);
-			
+				productRepository.findByNameContaining(name).forEach(products::add);
+			System.out.println("Content of products is " + products.toString());
 			if(products.isEmpty()) {
 				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 			}
 			return new ResponseEntity<>(products,HttpStatus.OK);
-		}catch (Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+//		}catch (Exception e) {
+//			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-	}
+//	}
 	
 	@GetMapping("/products/{id}")
 	//@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")

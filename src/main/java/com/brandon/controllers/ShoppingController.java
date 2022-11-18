@@ -2,9 +2,12 @@ package com.brandon.controllers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -48,26 +51,30 @@ public class ShoppingController {
 	CartContentsRepo cartContentCon;
 	
 	@GetMapping("/shoppingCart")
-	public @ResponseBody Map<ProductModel, Integer> shoppingCart() {
-		long currentUser = usercon.getCurrentUser().getId();
-		Optional<Cart> cart = cartCon.findCart(currentUser);
-		HashMap<ProductModel,Integer> items = new HashMap<>();
+	public @ResponseBody Set<CartContents> shoppingCart() throws NoSuchElementException {
+		Users currentUser = usercon.getCurrentUser();
+		Optional<Cart> tryCart = Optional.empty();
+		tryCart = cartCon.findCart(currentUser.getId());		//cartCon.findCart(currentUser);		
+		Set<CartContents> items = new HashSet<>();
+		System.out.println("Printing cart belonging to "+ currentUser.getUsername());
 		try {
-		if(cart.isPresent()&&!cart.get().getItems().isEmpty()) {
-			for(CartContents content:cart.get().getItems()) {
-				items.put(content.getProduct(), content.getQuantity());			
+		if(tryCart.isPresent()) {
+			for(CartContents content:tryCart.get().getItems()) {
+				items.add(content);			
 				}
-		}}catch (NullPointerException e) {System.out.println("Cart is empty");}
+		}}catch (NullPointerException | NoSuchElementException e) {System.out.println("Cart is empty");}
 		return items;		
 	}
 	
 	
 	@GetMapping("/addProduct/{productId}")
-    public @ResponseBody void addProductToCart(@PathVariable("productId") Long productId) {
+    public @ResponseBody String addProductToCart(@PathVariable("productId") Long productId) {
 		//get the current usersID using Security
+		System.out.println("Product request recieved");
 		Long currentUser= usercon.getCurrentUser().getId();
 		Optional<Cart> cart = cartCon.findCart(currentUser);
 		ProductModel product = prodCon.getReferenceById(productId);
+		System.out.println(product.getName());
 		boolean loadTrigger = true;
 		if(!cart.isPresent()) {
 			cartCon.createCart(currentUser);
@@ -96,6 +103,7 @@ public class ShoppingController {
 			}
 	
 		cartCon.updateCart(cart.get());
+		return "console.log('item added')";
     }
 	
 	@GetMapping("/removeProduct/{productId}")

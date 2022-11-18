@@ -32,7 +32,7 @@ public class CartContents {
 	
 	@Id @GeneratedValue(strategy=GenerationType.IDENTITY)
 	private int cartContentId;
-	 @OneToOne(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
+	 @OneToOne(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
 	  @JoinTable(name = "CartContent_Products", 
 	             joinColumns = @JoinColumn(name = "Product_Catalog_id"),
 	             inverseJoinColumns = @JoinColumn(name = "CartContents_cartcontentid"))

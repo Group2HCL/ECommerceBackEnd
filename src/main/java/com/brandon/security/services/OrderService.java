@@ -29,13 +29,14 @@ public class OrderService {
 	}
 	
 	public Optional<Order> findOrder(Long id){
-		List<Order> orders=repo.findAll();
-		Optional<Order> hopefulOrder=null;
-		for(Order order: orders) {
+		Optional<List<Order>> orders=Optional.of(repo.findAll());
+		Optional<Order> hopefulOrder=Optional.empty();
+		if(orders.isPresent()) {
+		 for(Order order: orders.get()) {
 			if(id==order.getCustomerNo()) {
 				hopefulOrder=Optional.of(order);
 			}
-		}
+		}}
 		return hopefulOrder;
 		
 	}
