@@ -21,33 +21,35 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.brandon.models.ProductModel;
 import com.brandon.repositories.ProductRepo;
+import com.brandon.security.services.ProductService;
 
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin (origins = "http://localhost:4200/", allowCredentials="true")
 @RestController
 @RequestMapping("/api/Product")
 public class ProductController {
 	@Autowired
 	ProductRepo productRepository;
+	ProductService pservice;
 	
 	@GetMapping("/products")
 	//@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	public ResponseEntity<List<ProductModel>> getAllProducts(@RequestParam(required = false) String name){
-		try {
+		//try {
 			List<ProductModel>products = new ArrayList<ProductModel>();
 			
 			if (name ==null)
 				productRepository.findAll().forEach(products::add);
 			else
 				productRepository.findByNameContaining(name).forEach(products::add);
-			
+			System.out.println("Content of products is " + products.toString());
 			if(products.isEmpty()) {
 				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 			}
 			return new ResponseEntity<>(products,HttpStatus.OK);
-		}catch (Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+//		}catch (Exception e) {
+//			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-	}
+//	}
 	
 	@GetMapping("/products/{id}")
 	//@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
