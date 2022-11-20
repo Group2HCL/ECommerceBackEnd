@@ -37,6 +37,9 @@ public class ProductModel {
 	@Column(name ="description")
 	private String description;
 	
+	@Column(name="image")
+	private String image;
+	
 	@Override 
 	public String toString() {
 		
