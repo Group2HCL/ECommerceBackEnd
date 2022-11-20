@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import com.brandon.models.OrderProduct;
 import com.brandon.models.ProductModel;
 import com.brandon.repositories.OrderProductRepo;
+import com.brandon.web.OrderProductBean;
 
 @Service
 public class OrderProductService {
@@ -13,9 +14,12 @@ public class OrderProductService {
 	ProductService prepo;
 	
 	
-	public OrderProduct createEntry(ProductModel product, int quantity){		
-		OrderProduct orderProduct=new OrderProduct(product, quantity);
+	public OrderProduct createEntry(OrderProductBean product){		
+		OrderProduct orderProduct=new OrderProduct(product);
 		repo.save(orderProduct);		
 		return orderProduct;		
+	}
+	public void deleteEntry(OrderProduct orderProduct) {
+		repo.delete(orderProduct);
 	}
 }

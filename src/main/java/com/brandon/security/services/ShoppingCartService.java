@@ -2,8 +2,11 @@ package com.brandon.security.services;
 
 import java.math.BigDecimal;
 import java.util.Map;
+import java.util.Set;
 
 import com.brandon.Exceptions.NotEnoughProductsInStockException;
+import com.brandon.models.OrderProduct;
+import com.brandon.models.Orders;
 import com.brandon.models.ProductModel;
 
 public interface ShoppingCartService {
@@ -14,7 +17,7 @@ public interface ShoppingCartService {
 		
 		Map<ProductModel, Integer> getProductsInCart();
 		
-		void checkout() throws NotEnoughProductsInStockException;
+		void checkout(Set<OrderProduct> itemsOrdered) throws NotEnoughProductsInStockException;
 		
-		BigDecimal getTotal();
+		BigDecimal getTotal(Orders order);
 }
