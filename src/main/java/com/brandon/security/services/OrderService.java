@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.brandon.models.Order;
+import com.brandon.models.Orders;
 import com.brandon.models.Users;
 import com.brandon.repositories.OrderRepo;
 import com.brandon.repositories.UserRepo;
@@ -18,23 +18,23 @@ public class OrderService {
 	@Autowired
 	UserService uService;
 	
-	public Order createNewOrder(String uName) {
+	public Orders createNewOrder(String uName) {
 		Users user=uService.findByUsername(uName).get();
-		Order newOrder = new Order();
+		Orders newOrder = new Orders();
 		newOrder.setCustomerNo(user.getId());
 		return newOrder;
 	}
-	public void saveOrder(Order order) {
-		repo.save(order);
+	public void saveOrder(Orders orders) {
+		repo.save(orders);
 	}
 	
-	public Optional<Order> findOrder(Long id){
-		Optional<List<Order>> orders=Optional.of(repo.findAll());
-		Optional<Order> hopefulOrder=Optional.empty();
-		if(orders.isPresent()) {
-		 for(Order order: orders.get()) {
-			if(id==order.getCustomerNo()) {
-				hopefulOrder=Optional.of(order);
+	public Optional<Orders> findOrder(Long id){
+		Optional<List<Orders>> order=Optional.of(repo.findAll());
+		Optional<Orders> hopefulOrder=Optional.empty();
+		if(order.isPresent()) {
+		 for(Orders orders: order.get()) {
+			if(id==orders.getCustomerNo()) {
+				hopefulOrder=Optional.of(orders);
 			}
 		}}
 		return hopefulOrder;

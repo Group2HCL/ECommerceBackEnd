@@ -1,6 +1,7 @@
 package com.brandon;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
@@ -9,6 +10,7 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
 
 @SpringBootApplication
 @SecurityScheme(name="swaggerui", scheme="Bearer", type = SecuritySchemeType.APIKEY, in=SecuritySchemeIn.HEADER)
+@EnableAutoConfiguration
 public class CapstoneDemoMidtermApplication {
 
 	public static void main(String[] args) {
