@@ -13,4 +13,6 @@ import com.brandon.models.Users;
 
 @Repository
 public interface UserRepo extends JpaRepository<Users, Long>{
+	public Optional<Users> findByUsername(String username);
+	public Optional<Users> findByEmail(String email);
 }

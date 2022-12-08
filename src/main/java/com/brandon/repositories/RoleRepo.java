@@ -10,8 +10,9 @@ import com.brandon.models.Roles;
 import com.brandon.models.UserRoles;
 
 @Repository
-public interface RoleRepo extends JpaRepository<Roles, Long>{
+public interface RoleRepo extends JpaRepository<Roles, Integer>{
 	Optional<Roles> findByName(UserRoles name);
+	Optional<Roles> findById(int id);
 	
 	//Roles findByRole(@Param("role") String role);
 }

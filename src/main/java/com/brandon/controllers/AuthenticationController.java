@@ -2,11 +2,17 @@ package com.brandon.controllers;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.validation.Valid;
+import com.okta.sdk.client.Client;
+import com.okta.sdk.resource.user.User;
+import com.okta.sdk.resource.user.UserBuilder;
+import com.okta.sdk.resource.user.UserProfile;
 
+import javax.validation.Valid;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -16,12 +22,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.brandon.models.Roles;
 import com.brandon.models.UserRoles;
 import com.brandon.models.Users;
@@ -36,12 +42,12 @@ import com.brandon.web.MessageBean;
 import com.brandon.web.SignUpBean;
 import com.brandon.web.UserInfoBean;
 
-@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600)
+@CrossOrigin(origins = "http://localhost:4200/", maxAge = 3600)
 @RestController
 @RequestMapping("/api/auth")
 public class AuthenticationController {
-	@Autowired
-	AuthenticationManager authenticationManager;
+	//@Autowired
+	//AuthenticationManager authenticationManager;
 
 	@Autowired
 	UserService userService;
@@ -56,11 +62,13 @@ public class AuthenticationController {
 	JwtUtils jwtUtils;
 	@Autowired
 	EmailService emailService;
+	
+	Client client;
 
 	@PostMapping("/signin")
-	public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginBean loginRequest) {
+	public ResponseEntity<?> authenticateUser(@AuthenticationPrincipal OidcUser user) {
 		try {
-			Authentication authentication = authenticationManager.authenticate(
+			/*Authentication authentication = authenticationManager.authenticate(
 					new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
 			SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -70,17 +78,17 @@ public class AuthenticationController {
 
 			List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
 					.collect(Collectors.toList());
-
-			return ResponseEntity.ok(new UserInfoBean(jwt, userDetails.getId(), userDetails.getUsername(),
-					userDetails.getEmail(), roles));
+			*/
+			System.out.println(user.getFullName() + "has logged in ");
+			return ResponseEntity.ok(user);
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body(new MessageBean("Invalid username or password!"));
 		}
 	}
 
 	@PostMapping("/verifypw")
-	public ResponseEntity<Boolean> verifyPassword(@Valid @RequestBody LoginBean loginRequest) {
-		boolean doesMatch = false;
+	public /*ResponseEntity<Boolean>*/ void verifyPassword(@Valid @RequestBody LoginBean loginRequest) {
+		/*boolean doesMatch = false;
 		try {
 			Authentication authentication = authenticationManager.authenticate(
 					new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
@@ -108,8 +116,11 @@ public class AuthenticationController {
 		if (userService.existsByEmail(signUpRequest.getEmail())) {
 			return ResponseEntity.badRequest().body(new MessageBean("Error: Email is already taken!"));
 		}
-
-		Users user = new Users(signUpRequest.getUsername(), signUpRequest.getEmail(),
+				
+		char[] userPassword = signUpRequest.getPassword().toCharArray();
+		
+		UserBuilder.instance().setLogin(signUpRequest.getEmail()).setFirstName(signUpRequest.getFirstName()).setPassword(userPassword).setLastName(signUpRequest.getLastName()).setActive(true).buildAndCreate(client);
+		Users user = new Users(signUpRequest.getFirstName(), signUpRequest.getEmail(),
 				encoder.encode(signUpRequest.getPassword()));
 
 		Set<String> strRoles = signUpRequest.getRole();
@@ -140,7 +151,7 @@ public class AuthenticationController {
 		emailService.sendSimpleMessage(user.getEmail(), "Registration@test.com", "Welcome to the Shop!",
 				"Thank you for joining the Shop!");
 
-		return ResponseEntity.ok(new MessageBean("User registered successfully!"));
+		return ResponseEntity.ok(new MessageBean("User registered successfully!")); */
 	}
 
 	@PostMapping("/signout")

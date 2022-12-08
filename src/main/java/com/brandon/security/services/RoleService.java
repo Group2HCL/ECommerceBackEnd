@@ -36,12 +36,12 @@ public class RoleService {
 	}
 
 	// Get by role ID
-	public Roles getByRoleId(long roleId) {
+	public Roles getByRoleId(int roleId) {
 		return roleRepo.findById(roleId).get();
 	}
 
 	// Delete by role ID
-	public void deleteByRoleId(Long roleId) {
+	public void deleteByRoleId(int roleId) {
 		roleRepo.deleteById(roleId);
 	}
 	

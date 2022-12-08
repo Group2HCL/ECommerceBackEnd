@@ -13,37 +13,18 @@ public class UserService {
 	UserRepo repo;
 	
 	public Users getCurrentUser() {
-		Users user = findByUsername(SecurityContextHolder.getContext().getAuthentication().getName()).get();
+		Users user = repo.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName()).get();
 		return user;
 	}
 	
-	public Optional<Users> findByUsername(String username){
-	List<Users> roster =repo.findAll();
-	Optional<Users> tryUser = Optional.empty();	
-     for(Users user:roster) {
-    	 if (username.equals(user.getUsername())) {
-    		 tryUser=Optional.of(user);  	 }
-     }
-     return tryUser;		
-	}
-	
-	public Optional<Users> findByEmail(String email){
-		List<Users> roster =repo.findAll();
-		Optional<Users> tryUser = Optional.empty();	
-	     for(Users user:roster) {
-	    	 if (email.equals(user.getUsername())) {
-	    		 tryUser=Optional.of(user);  	 }
-	     }
-	     return tryUser;		
-		};
 		public boolean existsByUsername(String username) {
-			if(findByUsername(username).isPresent()) {
+			if(repo.findByUsername(username).isPresent()) {
 				return true;
 			}else {return false;}
 			
 		}
 		public boolean existsByEmail(String email) {
-			if(findByEmail(email).isPresent()) {
+			if(repo.findByEmail(email).isPresent()) {
 				return true;
 			}else {return false;}
 		}
@@ -55,6 +36,12 @@ public class UserService {
 		}
 		public void update(Users user) {
 			repo.save(user);
+		}
+		public Optional<Users> findUserByEmail(String email){
+			return repo.findByEmail(email);
+		}
+		public Optional<Users> findByUsername(String name){
+			return repo.findByUsername(name);
 		}
 		public Users retrieve(Long id) {
 			Users user = repo.getReferenceById(id);
