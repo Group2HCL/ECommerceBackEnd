@@ -2,13 +2,17 @@ package com.brandon.controllers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,7 +43,7 @@ public class UserController {
 	RoleRepo roleRepository;
 	
 	@GetMapping("/users")
-	//@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	//@PreAuthorize("hasAuthority('Admin')")
 	public ResponseEntity<List<Users>> getAllUsers(@RequestParam(required = false) String username){
 		try {
 			List<Users>users = new ArrayList<Users>();
@@ -47,7 +51,7 @@ public class UserController {
 			if (username ==null)
 				userRepository.findAll().forEach(users::add);
 			else
-				users.add(uService.findByUsername(username).get());
+				users.add(userRepository.findByUsername(username).get());
 			
 			if(users.isEmpty()) {
 				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -75,7 +79,7 @@ public class UserController {
 	public ResponseEntity<Users> createUser(@RequestBody Users user){
 		try {
 			Users user1 = userRepository
-					.save(new Users(user.getUsername(),user.getEmail(),user.getPassword()));			
+					.save(new Users(user.getUsername(),user.getEmail()));			
 			return new ResponseEntity<>(user1,HttpStatus.CREATED);
 		}catch(Exception e) {
 			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -128,7 +132,31 @@ public class UserController {
 		}else {
 			targetUser.get().getRoles().remove(roleRepository.findByName(UserRoles.ROLE_ADMIN).get());
 		}
+		
+		
 	}
+	
+	@PostMapping("convert")
+	public Users unbindFromOkta(@RequestBody Map<String,String> userRequest ) {
+		System.out.println(userRequest.get("name"));
+		String name= userRequest.get("name");
+		String email = userRequest.get("email");
+		if(name!= null) {
+		if(userRepository.findByUsername(name).isPresent()) {
+			return userRepository.findByUsername(name).get();
+		}
+		else {
+			Users aUser= new Users(name,email);
+			aUser.setEmail(email);
+			aUser.getRoles().add(roleRepository.getReferenceById(1));
+			aUser.setUsername(name);
+			uService.create(aUser);
+			return aUser;
+			}
+		}
+		return null;
+}
+	
 
 }
 

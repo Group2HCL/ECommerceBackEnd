@@ -36,16 +36,12 @@ public class Users {
 	private Long id;
 	
 	@NotBlank
-	@Size(max = 20)
+	@Size(max = 50)
 	private String username;
 	
-	@NotBlank
-	@Size(max = 50)
-	@Email
-	private String email;
 	
-	@NotBlank
-	@Size(max = 120)
+	private String email;
+
 	private String password;
 	
 
@@ -56,10 +52,9 @@ public class Users {
 	
 	private Set<Roles> roles = new HashSet<>();
 	  
-public Users(String username, String email, String password) {
+public Users(String username, String email) {
 	this.username = username;
 	this.email = email;
-	this.password = password;
 }
 
 }

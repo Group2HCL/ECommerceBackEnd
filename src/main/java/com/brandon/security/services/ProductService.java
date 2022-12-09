@@ -16,13 +16,14 @@ import com.brandon.repositories.ProductRepo;
 	public class ProductService {
 		@Autowired
 		private ProductRepo productRepository;		
-		
 		public List<ProductModel> findbyNameContaining(String name) {
-			ProductModel lookingfor= new ProductModel();
-			lookingfor.setName(name);
-			Example<ProductModel> example = Example.of(lookingfor);
-			List<ProductModel> recieve = productRepository.findAll(example);
-			return recieve;
+			List<ProductModel> inventory = productRepository.findAll();
+			for(ProductModel product:inventory) {
+				if(!product.getName().contains(name)) {
+					inventory.remove(product);
+				}
+			}	
+			return inventory;
 		}
 		
 		

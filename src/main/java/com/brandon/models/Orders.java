@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -23,15 +22,15 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name="Order")
-public class Order {
+@Table(name="Orders")
+public class Orders {
 	@Id
 	@Column(name="orderno")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int orderno;
 	 @OneToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
-	 @JoinTable(name = "Order_OrderProduct", 
-	             joinColumns = @JoinColumn(name = "Order"),
+	 @JoinTable(name = "Orders_OrderProduct", 
+	             joinColumns = @JoinColumn(name = "Orders"),
 	             inverseJoinColumns = @JoinColumn(name = "OrderProduct"))
 	private Set<OrderProduct> products=new HashSet<OrderProduct>();
 	 @Column(name="subtotal")
@@ -41,7 +40,7 @@ public class Order {
 	 @Column(name="status")
 	private String status;
 
-	public Order() {
+	public Orders() {
 		this.status="Pending";
 	}
 }
