@@ -16,7 +16,10 @@ import lombok.NoArgsConstructor;
 public class SignUpBean {
 	@NotBlank
 	@Size(min = 3, max = 50)
-	private String username;
+	private String firstName;
+	
+	@Size(min =2, max = 50)
+	private String lastName;
 	
 	@NotBlank
 	@Size(max = 50)

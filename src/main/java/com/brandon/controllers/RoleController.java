@@ -1,8 +1,13 @@
 package com.brandon.controllers;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,8 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.brandon.models.Roles;
+import com.brandon.models.Users;
 import com.brandon.security.services.RoleService;
-
+import com.brandon.security.services.UserService;
 
 @RestController
 @RequestMapping("api/roles")
@@ -23,6 +29,8 @@ import com.brandon.security.services.RoleService;
 public class RoleController {
 	@Autowired
 	private RoleService roleService;
+	@Autowired
+	private UserService userService;
 	
 
 	@GetMapping("/")
@@ -36,13 +44,13 @@ public class RoleController {
 	}
 	
 	@DeleteMapping("/{roleId}")
-	public void deleteRole(@PathVariable Long roleId) {
+	public void deleteRole(@PathVariable int roleId) {
 		roleService.deleteByRoleId(roleId);
 	}
 
 	
 	@GetMapping("/toggle/{userId}")
-    public boolean toggleUser(@PathVariable Long userId) {
-		return roleService.updateAdminRights(userId);  
+    public boolean toggleUser(@PathVariable Long userId) {		
+		return roleService.updateAdminRights(userId); 
     } 
 }
