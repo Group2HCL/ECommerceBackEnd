@@ -8,7 +8,6 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,11 +22,6 @@ import com.brandon.models.Roles;
 import com.brandon.models.Users;
 import com.brandon.security.services.RoleService;
 import com.brandon.security.services.UserService;
-import com.okta.sdk.client.Client;
-import com.okta.sdk.resource.group.Group;
-import com.okta.sdk.resource.user.User;
-import com.okta.sdk.resource.user.UserProfile;
-
 
 @RestController
 @RequestMapping("api/roles")
@@ -37,8 +31,6 @@ public class RoleController {
 	private RoleService roleService;
 	@Autowired
 	private UserService userService;
-	
-	Client client;
 	
 
 	@GetMapping("/")

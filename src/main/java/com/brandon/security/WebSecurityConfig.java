@@ -40,12 +40,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		return new AuthenticationTokenFilter();
 	}
 	*/
+	
 	@Override
 	public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
 		authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
 	}
 	
-	@Bean
+	//@Bean
 	public FilterRegistrationBean<CorsFilter> simpleCorsFilter() {
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		CorsConfiguration config = new CorsConfiguration();
@@ -68,8 +69,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {       
 
-	        http.csrf().disable().authorizeRequests().anyRequest().permitAll()	       
-	        .and().oauth2Client();
+	        http.cors().and().csrf().disable().authorizeRequests().anyRequest().permitAll();
 	    
 
 	    }

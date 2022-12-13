@@ -12,7 +12,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -90,12 +89,11 @@ public class UserController {
 	//@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<Users> updateUser(@PathVariable("id") long id,@RequestBody Users user){
 		Optional<Users> userData = userRepository.findById(id);
-		PasswordEncoder passwordEncoder= new BCryptPasswordEncoder();
 		if (userData.isPresent()) {
 			Users user2 = userData.get();
 			user2.setUsername(user.getUsername());
 			user2.setEmail(user.getEmail());
-			user2.setPassword(passwordEncoder.encode(user.getPassword()));
+			user2.setAddress(user.getAddress());
 			return new ResponseEntity<>(userRepository.save(user2),HttpStatus.OK);
 		}else {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);

@@ -6,11 +6,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.okta.sdk.client.Client;
-import com.okta.sdk.resource.user.User;
-import com.okta.sdk.resource.user.UserBuilder;
-import com.okta.sdk.resource.user.UserProfile;
-
 import javax.validation.Valid;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +17,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -63,9 +57,7 @@ public class AuthenticationController {
 	@Autowired
 	EmailService emailService;
 	
-	Client client;
-
-	@PostMapping("/signin")
+	/*@PostMapping("/signin")
 	public ResponseEntity<?> authenticateUser(@AuthenticationPrincipal OidcUser user) {
 		try {
 			/*Authentication authentication = authenticationManager.authenticate(
@@ -78,14 +70,14 @@ public class AuthenticationController {
 
 			List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
 					.collect(Collectors.toList());
-			*/
+			
 			System.out.println(user.getFullName() + "has logged in ");
 			return ResponseEntity.ok(user);
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body(new MessageBean("Invalid username or password!"));
 		}
 	}
-
+*/
 	@PostMapping("/verifypw")
 	public /*ResponseEntity<Boolean>*/ void verifyPassword(@Valid @RequestBody LoginBean loginRequest) {
 		/*boolean doesMatch = false;
